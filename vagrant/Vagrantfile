@@ -13,10 +13,15 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provision "shell",
 		inline: "cat /config/id_bionic.pub >> .ssh/authorized_keys"
-		
 	config.vm.provision "shell", inline: $script_mysql
-	
+	config.vm.provision "shell",
+        inline: "cat /configs/mysqld.cnf > /etc/mysql/mysql.conf.d/mysqld.cnf"
+    config.vm.provision "shell",
+        inline: "service mysql restart"
 
 	config.vm.synced_folder "./configs", "/configs"
 	config.vm.synced_folder ".", "/vagrant", disabled: true
 end
+#sudo mysql 
+#select user from mysql.user
+#/etc/mysql/mysql.conf.d/mysqld.cnf que possui o IP bind-address = 127
