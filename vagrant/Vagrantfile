@@ -6,10 +6,10 @@ date > /etc/vagrant_provisioned_at
 SCRIPT
 
 Vagrant.configure("2") do |config|
-	config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/bionic64"
 
-	config.vm.define "mysqldb" do |mysql|
-	mysql.vm.network "public_network", ip: "10.0.0.150"
+  config.vm.define "mysqldb" do |mysql|
+	mysql.vm.network "public_network", ip: "10.0.0.20"
 
 	mysql.vm.provision "shell",
 	 inline: "cat /configs/id_vangrant.pub >> .ssh/authorized_keys"
@@ -20,18 +20,20 @@ Vagrant.configure("2") do |config|
 
 	mysql.vm.synced_folder "./configs", "/configs"
 	mysql.vm.synced_folder ".", "/vagrant", disabled: true
-	end
+  end
 
-	config.vm.define "phpweb" do |phpweb|
-	 phpweb.vm.network "forwarded_port", guest: 8888, host: 8888
-	 phpweb.vm.network "public_network", ip: "10.0.0.151"
+  config.vm.define "phpweb" do |phpweb|
+	phpweb.vm.network "forwarded_port", guest: 80, host: 8888
+	phpweb.vm.network "public_network", ip: "10.0.0.10",
+	auto_correct: true
 
-	 phpweb.vm.provision "shell", inline: "apt-get update && apt-get install -y puppet"
+	phpweb.vm.provision "shell", 
+	inline: "apt-get update && apt-get install -y puppet"
 	 
-	 phpweb.vm.provision "puppet" do |puppet|
+	phpweb.vm.provision "puppet" do |puppet|
 		puppet.manifests_path = "./configs/manifests"
-		puppet.manifests_file = "phpweb.pp"
-
-	end
+		puppet.manifest_file = "phpweb.pp"
+	  end
+  end	
 end
 
