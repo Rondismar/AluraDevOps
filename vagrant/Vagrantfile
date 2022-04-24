@@ -51,7 +51,8 @@ Vagrant.configure("2") do |config|
 
 	ansible.vm.provision "shell",
 	 inline: "cp /vagrant/configs/id_vangrant  /home/vagrant && \
-	 chmod 600 /home/vagrant/id_vangrant" 
+	 chmod 600 /home/vagrant/id_vangrant && \
+	 chwon vagrant:vagrant /home/vagrant/id_vagrant" 
 		
 	ansible.vm.provision "shell",
 		inline: "apt-get update && \
