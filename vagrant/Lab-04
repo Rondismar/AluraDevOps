@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/focal64"
 
   config.vm.define "mysqldb" do |mysql| 
-	mysql.vm.network "public_network", ip: "10.0.0.5"
+	mysql.vm.network "public_network", ip: "10.0.0.20"
 
 	mysql.vm.provision "shell",
 	 inline: "cat /configs/id_vangrant.pub >> .ssh/authorized_keys"
@@ -24,14 +24,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "phpweb" do |phpweb|
 	phpweb.vm.network "forwarded_port", guest: 80, host: 8888
-	phpweb.vm.network "public_network", ip: "10.0.0.6",
+	phpweb.vm.network "public_network", ip: "10.0.0.10",
 	auto_correct: true
-
-	phpweb.vm.synced_folder "./configs", "/configs"
-	phpweb.vm.synced_folder ".", "/vagrant", disabled: true
 	phpweb.vm.provision "shell",
 	 inline: "cat /configs/id_vangrant.pub >> .ssh/authorized_keys"
-
 	phpweb.vm.provision "shell", 
 	inline: "apt-get update && apt-get install -y puppet"
 	 
@@ -40,24 +36,5 @@ Vagrant.configure("2") do |config|
 		puppet.manifest_file = "phpweb.pp"
 	  end
   end	
-  config.vm.define "mysqlserver" do |mysqlserver|
-	mysqlserver.vm.network "public_network", ip: "10.0.0.7"
-	mysqlserver.vm.provision "shell",
-	inline: "cat /vagrant/configs/id_vangrant.pub >> .ssh/authorized_keys"
-  end
-
-  config.vm.define "ansible" do |ansible|
-	ansible.vm.network "public_network", ip: "10.0.0.8"
-
-	ansible.vm.provision "shell",
-	 inline: "cp /vagrant/configs/id_vangrant  /home/vagrant && \
-	 chmod 600 /home/vagrant/id_vangrant" 
-		
-	ansible.vm.provision "shell",
-		inline: "apt-get update && \
-				 apt-get install -y software-properties-common && \
-				 apt-add-repository --yes --update ppa:ansible/ansible && \
-				 apt-get install -y ansible"
-end
 end
 
